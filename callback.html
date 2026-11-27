@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Conectando...</title></head><body>
+<p id="m">Conectando con TikTok...</p>
+<script src="config.js"></script>
+<script>
+(async()=>{
+  const q=new URLSearchParams(location.search), m=document.getElementById("m");
+  if(q.get("error")){m.textContent="Error: "+q.get("error_description");return;}
+  if(q.get("state")!==sessionStorage.getItem("tt_state")){m.textContent="Estado no válido.";return;}
+  const r=await fetch(window.CONFIG.API_BASE+"/token",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({code:q.get("code"),redirect_uri:window.CONFIG.REDIRECT_URI})});
+  const d=await r.json();
+  if(!d.access_token){m.textContent="Error: "+JSON.stringify(d);return;}
+  sessionStorage.setItem("tt_access_token",d.access_token);
+  sessionStorage.setItem("tt_open_id",d.open_id||"");
+  location.href="index.html";
+})();
+</script></body></html>
